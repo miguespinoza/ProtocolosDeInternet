@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 #include <net/if.h>
+
 int main(int argc, char const *argv[])
 {
 	char buff[2000];
@@ -19,7 +20,7 @@ int main(int argc, char const *argv[])
 
 	int sock= socket(PF_PACKET,SOCK_RAW,ETH_P_ALL);
 
-	strncpy(ethreq.ifr.name,"eno1",FNAMSIZ);
+	strncpy(ethreq.ifr_name,"eno1",IFNAMSIZ);
 
 	ioctl(sock,SIOCGIFFLAGS,&ethreq);
 
@@ -27,7 +28,7 @@ int main(int argc, char const *argv[])
 
 	ioctl(sock,SIOCSIFFLAGS,&ethreq);
 
-	recvfrom(sock,buff,sizeof(buff),0,&saddr);
+	//recvfrom(sock,buff,sizeof(buff),0,&saddr);
 	printf("%s\n",buff );
 	return 0;
 }
