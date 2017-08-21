@@ -27,8 +27,8 @@ int main(int argc, char const *argv[])
 	ethreq.ifr_flags |=IFF_PROMISC;
 
 	ioctl(sock,SIOCSIFFLAGS,&ethreq);
-
-	//recvfrom(sock,buff,sizeof(buff),0,&saddr);
+	int addr_size=sizeof(saddr);
+	recvfrom(sock,buff,sizeof(buff),0,&saddr,&addr_size);
 	printf("%s\n",buff );
 	return 0;
 }
