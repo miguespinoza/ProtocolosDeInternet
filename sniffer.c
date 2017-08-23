@@ -10,43 +10,40 @@
 #include <sys/types.h>
 #include <net/if.h>
 
-#include<netinet/ip_icmp.h>   //Provides declarations for icmp header
-#include<netinet/udp.h>   //Provides declarations for udp header
-#include<netinet/tcp.h>   //Provides declarations for tcp header
-#include<netinet/ip.h>    //Provides declarations for ip header
 
 
-#define BUFFER_SIZE 2000
+#define BUFFER_SIZE 2000 
 
-int create_socket();
-int procesar_trama(unsigned char *buffer, int buffer_size);
+int create_socket(); //funcion para crear el socket y poner tarjeta en modo promiscuo
+int procesar_trama(unsigned char *buffer, int buffer_size); //procesar la trama capturada
 
-int socket_raw;
+int socket_raw; //unico socket en todo el programa
 
 
 int main(int argc, char const *argv[])
 {
 	struct sockaddr saddr;
-	if(argc < 2){
+	if(argc < 2){ //como argumento recibe el numero de paquetes a capturar, si no lo tiene termina el programa
 		perror("Falta argumento de numero de paquetes a capturar");
 		exit(-1);
 	}
-	char *buff=(unsigned char *) malloc(sizeof(unsigned char)*BUFFER_SIZE);
-	int flag;
+	//buffer para capturar datos, puede ser buffer normal 
+	char *buff=(unsigned char *) malloc(BUFFER_SIZE);
+
+	int flag; //bandera para ver si se creo bien el socket 0 -> bien  -1 ->error
 	int nPaquetes=atoi(argv[1]);
 	flag=create_socket();
 	if(flag == 0)	//si flag es 0 entoces el socket se creo bien
 	{
 		int addr_size =sizeof(saddr);
-		for(int index=0;index<nPaquetes;index++){
-			int len=recvfrom(socket_raw,buff,BUFFER_SIZE,0,&saddr,&addr_size);
-			if(len<0){
-				perror("error al recibir paquete");
+		for(int index=0;index<nPaquetes;index++){//recibe los n paquetes que se indico en el paquete
+			int len=recvfrom(socket_raw,buff,BUFFER_SIZE,0,&saddr,&addr_size);//recibe los paquetes
+			if(len<0){ //si longitud de paquete es < 0 entonces hubo error
+				perror("error al recibir paquete"); //funcion que imprime un mensaje y el mensaje "oficial" de error
 				exit(-1);
 			}	
-			printf("l: %d\n",len);
 
-			procesar_trama(buff,BUFFER_SIZE);
+			procesar_trama(buff,BUFFER_SIZE); //manda a procesar la trama
 		}
 		
 
@@ -59,7 +56,8 @@ int main(int argc, char const *argv[])
 
 int procesar_trama(unsigned char *buffer, int buffer_size)
 {
-	/*MAC fuente 
+	/* TODO tareas a realizar
+	MAC fuente 
 	Dirección MAC destino 
 	Longitud de la trama 
 	Longitud de carga útil (datos y relleno) 
@@ -68,34 +66,33 @@ int procesar_trama(unsigned char *buffer, int buffer_size)
 
 	
 	uint16_t type = 0;
+	memcpy(&type,&buffer[12],sizeof(uint16_t)); //copia los bytes 12 y 13 de la trama al campo type
+	type = (type>>8) | (type<<8); //invierte los bytes ya que estan en Big endian. Ej. de 11110000 pasan a 00001111
 
-	memcpy(&type,&buffer[12],sizeof(uint16_t));
-	type = (type>>8) | (type<<8);
 
-
-	if(type <= 0x05dc){
-		printf("ETHERNET II -- ");
+	if(type <= 0x05dc){ //si es de 0 a 05dc es ethernet II
+		printf("ETHERNET II \n ");
 	}
 	else{
 		switch(type)
 		{
 			case 0x0800:
-				printf("IPv4 ");
+				printf("IPv4 \n");
 				break;
 			case 0x86dd:
-				printf("IPv6 -- ");	
+				printf("IPv6 \n ");	
 				break;
 			case 0x0806:
-				printf("ARP -- ");
+				printf("ARP \n ");
 				break;
 			case 0x8808:
-				printf("Control de flujo ethernet -- ");
+				printf("Control de flujo ethernet \n ");
 				break;
 			case 0x88e5: 
-				printf("Seguridad MAC -- ");
+				printf("Seguridad MAC \n ");
 				break;
 			default:
-			printf("Otro -- ");
+			printf("Otro \n ");
 
 		}
 	}
@@ -105,7 +102,6 @@ int procesar_trama(unsigned char *buffer, int buffer_size)
 int create_socket()
 {
 	struct sockaddr_in source,dest;
-	
 	struct ifreq ethreq;
 
 	socket_raw= socket(PF_PACKET,SOCK_RAW,htons(ETH_P_ALL));
