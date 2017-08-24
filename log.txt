@@ -1,8 +1,45 @@
 
-Trama 0 
-Protocolo: ARP
-Destino: ffffffffffff
-Origen: 5ca39d198162
-Longitud: 60 
-Longitud payload: 46 
+----------------------------
+Trama 1 
+Protocolo superior: IPv4
+Direccion Destino: 000000
+Direccion Origen: 000000
+Longitudde trama: 85 
+Longitud de carga util: 71 
+Unidifusion
+
+----------------------------
+Trama 2 
+Protocolo superior: IPv4
+Direccion Destino: 000000
+Direccion Origen: 000000
+Longitudde trama: 85 
+Longitud de carga util: 71 
+Unidifusion
+
+----------------------------
+Trama 3 
+Protocolo superior: IPv4
+Direccion Destino: 000000
+Direccion Origen: 000000
+Longitudde trama: 85 
+Longitud de carga util: 71 
+Unidifusion
+
+----------------------------
+Trama 4 
+Protocolo superior: IPv4
+Direccion Destino: 000000
+Direccion Origen: 000000
+Longitudde trama: 85 
+Longitud de carga util: 71 
+Unidifusion
+
+----------------------------
+Trama 5 
+Protocolo superior: IPv4
+Direccion Destino: 000000
+Direccion Origen: 000000
+Longitudde trama: 194 
+Longitud de carga util: 180 
 Unidifusion
