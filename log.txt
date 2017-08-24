@@ -1,0 +1,8 @@
+
+Trama 0 
+Protocolo: ARP
+Destino: ffffffffffff
+Origen: 5ca39d198162
+Longitud: 60 
+Longitud payload: 46 
+Unidifusion
