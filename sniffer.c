@@ -79,77 +79,63 @@ int procesar_trama(unsigned char *buffer, int buffer_size, int nTrama)
 	unsigned char  *origen=(unsigned char *) malloc(10);
 
 	fprintf(file,"\nTrama %d \n",nTrama);
-	printf("\nTrama %d \n",nTrama);
-
-	for(int i=0;i<buffer_size; i++){
-		printf("%x",buffer[i]);
-	}
-	printf("\n");
 
 	if(type <= 0x05dc){ //si es de 0 a 05dc es ethernet II
-		printf("ETHERNET II \n ");
 		fprintf(file,"ETHERNET II");
 	}
 	else{
 		switch(type)
 		{
 			case 0x0800:
-				printf("IPv4 \n");
 				fprintf(file,"Protocolo: IPv4\n");
 				break;
 			case 0x86dd:
-				printf("IPv6 \n");	
 				fprintf(file,"Protocolo: IPv6\n");
 				break;
 			case 0x0806:
-				printf("ARP \n");
 				fprintf(file,"Protocolo: ARP\n");
 				break;
 			case 0x8808:
-				printf("Control de flujo ethernet \n ");
 				fprintf(file,"Protocolo: Control de flujo ethernet\n");
 				break;
 			case 0x88e5: 
-				printf("Seguridad MAC \n");
 				fprintf(file,"Protocolo: Seguridad MAC\n");
 				break;
 			default:
-				printf("Otro \n");
 				fprintf(file,"Protocolo: Otro\n");
 		}
-		printf("Destino: ");
 		fprintf(file,"Destino: ");
 		memcpy(destino,&buffer[0],6); //copia la mac destino de la trama al string buffer, desde el inicio de la trama copia 6 bytes
 		for(int i=0;i<6;i++){
-			printf("%x",destino[i]);	//imprime en consola dir destino byte por byte
+
 			fprintf(file,"%x",destino[i]);
 		}
-		printf("\n");
+
 		fprintf(file,"\n");
 
-		printf("Origen: ");
+
 		fprintf(file,"Origen: ");
 		memcpy(origen,&buffer[6],6); //MAC origen, copia la mac origen de trama a destino, el offset es 6
 		for(int i=0;i<6;i++){
-			printf("%x",origen[i]);	//imprime origen byte por byre
+
 			fprintf(file,"%x",origen[i]);
 		}
-		printf("\n");
+
 		fprintf(file,"\n");
 
 		fprintf(file,"Longitud: %d \n",buffer_size); //longutud de trama
-		printf("Longitud %d \n",buffer_size);
+
 		fprintf(file,"Longitud payload: %d \n",buffer_size-14); //longitud de payload igual -14
-		printf("Longitud payload: %d \n",buffer_size-14);
+
 
 		uint16_t tipoMAC;				//UNIDIFUSION O MULTIDIFUSION
 		memcpy(&tipoMAC,&buffer[0],1);	//copia el primer byte de la trama a un entero
 		if(tipoMAC << 7 == 1){	//saca el ultimo bit del primer byte, 
-			printf(" Multidifusion\n");
+
 			fprintf(file,"Multidifusion\n");	//si es 1 es multidifusion
 		}
 		else{
-			printf("Unidifusion\n");
+
 			fprintf(file,"Unidifusion\n");	//si es 0 es unidifusion
 		}
 	}
