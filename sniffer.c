@@ -119,10 +119,9 @@ int procesar_trama(unsigned char *buffer, int buffer_size, int nTrama)
 		}
 		printf("Destino: ");
 		fprintf(file,"Destino: ");
-		memcpy(destino,&buffer[0],6); //MAC destino
-		
+		memcpy(destino,&buffer[0],6); //copia la mac destino de la trama al string buffer, desde el inicio de la trama copia 6 bytes
 		for(int i=0;i<6;i++){
-			printf("%x",destino[i]);
+			printf("%x",destino[i]);	//imprime en consola dir destino byte por byte
 			fprintf(file,"%x",destino[i]);
 		}
 		printf("\n");
@@ -130,9 +129,9 @@ int procesar_trama(unsigned char *buffer, int buffer_size, int nTrama)
 
 		printf("Origen: ");
 		fprintf(file,"Origen: ");
-		memcpy(origen,&buffer[6],6); //MAC origen
+		memcpy(origen,&buffer[6],6); //MAC origen, copia la mac origen de trama a destino, el offset es 6
 		for(int i=0;i<6;i++){
-			printf("%x",origen[i]);
+			printf("%x",origen[i]);	//imprime origen byte por byre
 			fprintf(file,"%x",origen[i]);
 		}
 		printf("\n");
@@ -140,18 +139,18 @@ int procesar_trama(unsigned char *buffer, int buffer_size, int nTrama)
 
 		fprintf(file,"Longitud: %d \n",buffer_size); //longutud de trama
 		printf("Longitud %d \n",buffer_size);
-		fprintf(file,"Longitud payload: %d \n",buffer_size-14); //longitud de payload
+		fprintf(file,"Longitud payload: %d \n",buffer_size-14); //longitud de payload igual -14
 		printf("Longitud payload: %d \n",buffer_size-14);
 
 		uint16_t tipoMAC;				//UNIDIFUSION O MULTIDIFUSION
-		memcpy(&tipoMAC,&buffer[0],1);
-		if(tipoMAC << 7 == 1){
+		memcpy(&tipoMAC,&buffer[0],1);	//copia el primer byte de la trama a un entero
+		if(tipoMAC << 7 == 1){	//saca el ultimo bit del primer byte, 
 			printf(" Multidifusion\n");
-			fprintf(file,"Multidifusion\n");
+			fprintf(file,"Multidifusion\n");	//si es 1 es multidifusion
 		}
 		else{
 			printf("Unidifusion\n");
-			fprintf(file,"Unidifusion\n");
+			fprintf(file,"Unidifusion\n");	//si es 0 es unidifusion
 		}
 	}
 
