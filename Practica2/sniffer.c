@@ -9,16 +9,33 @@
 #include <stdint.h>
 #include <sys/types.h>
 #include <net/if.h>
+#include<netinet/ip.h>    //Provides declarations for ip header
 
+struct ip_header {
+	unsigned short version;  /*Versión y longitud de cabecera*/
+	unsigned short longitudHeader;
+ 	unsigned short tipoSer;  /*Tipo de servicio*/
+ 	unsigned char longTotal;  /*Longitud total del datagrama*/
+	unsigned char IdentDgram;  /*Identificador de datagrama*/
+	unsigned char banderaOffset;  /*Fragmentación*/
+	unsigned short ttl; /*Tiempo de vida*/
+ 	unsigned short protSup; /*Protocolo de capa superior*/
+	unsigned char sumVer;  /*Suma de verificación*/
+	unsigned char IPorigen[4];  /*Dirección IP del transmisor*/
+	unsigned char IPdestino[4];  /*Dirección IP del receptor*/
+};
 
 
 #define BUFFER_SIZE 2000 
 
 int create_socket(); //funcion para crear el socket y poner tarjeta en modo promiscuo
 int procesar_trama(unsigned char *buffer, int buffer_size, int nTrama); //procesar la trama capturada
+int procesar_trama_ip(unsigned char *buffer, int buffer_size);
 
 int socket_raw; //unico socket en todo el programa
 FILE *file;
+struct sockaddr_in source2;
+struct header = struct ip_header;
 
 int main(int argc, char const *argv[])
 {
@@ -88,6 +105,7 @@ int procesar_trama(unsigned char *buffer, int buffer_size, int nTrama)
 		{
 			case 0x0800:
 				fprintf(file,"Protocolo: IPv4\n");
+				procesar_trama_ip(buffer,buffer_size);
 				break;
 			case 0x86dd:
 				fprintf(file,"Protocolo: IPv6\n");
@@ -142,6 +160,60 @@ int procesar_trama(unsigned char *buffer, int buffer_size, int nTrama)
 
 }
 
+int procesar_trama_ip(unsigned char *buffer, int buffer_size){
+	struct iphdr *iph = (struct iphdr *)buffer;
+	
+	struct sockaddr_in pkt_source,pkt_dest;
+
+	memset(&pkt_source, 0, sizeof(pkt_source));
+	pkt_source.sin_addr.s_addr = iph->saddr;
+		
+	memset(&pkt_dest, 0, sizeof(pkt_dest));
+	pkt_dest.sin_addr.s_addr = iph->daddr;
+
+	fprintf(file,"  IP origen       : %s\n",inet_ntoa(pkt_source.sin_addr));
+    fprintf(file,"  IP destino   : %s\n",inet_ntoa(pkt_dest.sin_addr));
+	fprintf(file,"  Version IP        : %d\n",(unsigned int)iph->version);
+	fprintf(file,"  Longitud de cabecera :  %d Bytes\n",((unsigned int)(iph->ihl))*4);
+	fprintf(file,"  Longitud de paquete : %d Bytes\n", buffer_size);
+	fprintf(file,"  Identificador    : %d\n",ntohs(iph->id));
+	fprintf(file,"  Tiempo de vida      : %d\n",(unsigned int)iph->ttl);
+	fprintf(file,"  Protocolo superior : %d\n",(unsigned int)iph->protocol);
+	
+
+		
+}
+void parse_trama_ip(unsigned char *buffer, int buffer_size){
+	memcpy(&header.version,&buffer[0],3);
+	memcpy(&header.longitudHeader,&buffer[4],7);
+	memcpy(&header.tipoSer,&buffer[8],13);
+	memcpy(&header.longTotal,&buffer[16],31);
+	memcpy(&header.IdentDgram,&buffer[32],47);
+	memcpy(&header.banderaOffset,&buffer[48],50);
+	memcpy(&header.banderaOffset,&buffer[64],71);
+	memcpy(&header.protSup,&buffer[72],79);
+	memcpy(&header.IPorigen[0],&buffer[96],103);
+	memcpy(&header.IPorigen[1],&buffer[104],111);
+	memcpy(&header.IPorigen[2],&buffer[112],119);
+	memcpy(&header.IPorigen[3],&buffer[120],127);
+	memcpy(&header.IPdestino[0],&buffer[128],135);
+	memcpy(&header.IPdestino[1],&buffer[136],143);
+	memcpy(&header.IPdestino[2],&buffer[144],151);
+	memcpy(&header.IPdestino[3],&buffer[152],159);	
+}
+struct ip_header {
+	unsigned short version;  /*Versión y longitud de cabecera*/
+	unsigned short longitudHeader;
+ 	unsigned short tipoSer;  /*Tipo de servicio*/
+ 	unsigned char longTotal;  /*Longitud total del datagrama*/
+	unsigned char IdentDgram;  /*Identificador de datagrama*/
+	unsigned char banderaOffset;  /*Fragmentación*/
+	unsigned short ttl; /*Tiempo de vida*/
+ 	unsigned short protSup; /*Protocolo de capa superior*/
+	unsigned char IPorigen[4];  /*Dirección IP del transmisor*/
+	unsigned char IPdestino[4];  /*Dirección IP del receptor*/
+};
+
 int create_socket()
 {
 	struct sockaddr_in source,dest;
@@ -153,7 +225,7 @@ int create_socket()
 		return -1;
 	}
 
-	strncpy(ethreq.ifr_name,"eno1",IFNAMSIZ);
+	strncpy(ethreq.ifr_name,"enp3s0",IFNAMSIZ);
 
 	int io=ioctl(socket_raw,SIOCGIFFLAGS,&ethreq);
 	if(io<0)
