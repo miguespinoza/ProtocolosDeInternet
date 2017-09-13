@@ -1,0 +1,400 @@
+
+Trama 0 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 98 
+Longitud payload: 84 
+Unidifusion
+
+Trama 1 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 77 
+Longitud payload: 63 
+Unidifusion
+
+Trama 2 
+Protocolo: ARP
+Destino: ffffffffffff
+Origen: 5ca39d198162
+Longitud: 60 
+Longitud payload: 46 
+Unidifusion
+
+Trama 3 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 66 
+Longitud payload: 52 
+Unidifusion
+
+Trama 4 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 66 
+Longitud payload: 52 
+Unidifusion
+
+Trama 5 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 90 
+Longitud payload: 76 
+Unidifusion
+
+Trama 6 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 90 
+Longitud payload: 76 
+Unidifusion
+
+Trama 7 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 162 
+Longitud payload: 148 
+Unidifusion
+
+Trama 8 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 1392 
+Longitud payload: 1378 
+Unidifusion
+
+Trama 9 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 1392 
+Longitud payload: 1378 
+Unidifusion
+
+Trama 10 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 287 
+Longitud payload: 273 
+Unidifusion
+
+Trama 11 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 78 
+Longitud payload: 64 
+Unidifusion
+
+Trama 12 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 72 
+Longitud payload: 58 
+Unidifusion
+
+Trama 13 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 118 
+Longitud payload: 104 
+Unidifusion
+
+Trama 14 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 427 
+Longitud payload: 413 
+Unidifusion
+
+Trama 15 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 86 
+Longitud payload: 72 
+Unidifusion
+
+Trama 16 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 70 
+Longitud payload: 56 
+Unidifusion
+
+Trama 17 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 60 
+Longitud payload: 46 
+Unidifusion
+
+Trama 18 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 80 
+Longitud payload: 66 
+Unidifusion
+
+Trama 19 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 129 
+Longitud payload: 115 
+Unidifusion
+
+Trama 20 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 66 
+Longitud payload: 52 
+Unidifusion
+
+Trama 21 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 129 
+Longitud payload: 115 
+Unidifusion
+
+Trama 22 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 78 
+Longitud payload: 64 
+Unidifusion
+
+Trama 23 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 66 
+Longitud payload: 52 
+Unidifusion
+
+Trama 24 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 66 
+Longitud payload: 52 
+Unidifusion
+
+Trama 25 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 66 
+Longitud payload: 52 
+Unidifusion
+
+Trama 26 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 66 
+Longitud payload: 52 
+Unidifusion
+
+Trama 27 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 66 
+Longitud payload: 52 
+Unidifusion
+
+Trama 28 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 66 
+Longitud payload: 52 
+Unidifusion
+
+Trama 29 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 66 
+Longitud payload: 52 
+Unidifusion
+
+Trama 30 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 66 
+Longitud payload: 52 
+Unidifusion
+
+Trama 31 
+Protocolo: IPv4
+Destino: 000000
+Origen: 000000
+Longitud: 85 
+Longitud payload: 71 
+Unidifusion
+
+Trama 32 
+Protocolo: IPv4
+Destino: 000000
+Origen: 000000
+Longitud: 85 
+Longitud payload: 71 
+Unidifusion
+
+Trama 33 
+Protocolo: IPv4
+Destino: 000000
+Origen: 000000
+Longitud: 85 
+Longitud payload: 71 
+Unidifusion
+
+Trama 34 
+Protocolo: IPv4
+Destino: 000000
+Origen: 000000
+Longitud: 85 
+Longitud payload: 71 
+Unidifusion
+
+Trama 35 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 89 
+Longitud payload: 75 
+Unidifusion
+
+Trama 36 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 83 
+Longitud payload: 69 
+Unidifusion
+
+Trama 37 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 83 
+Longitud payload: 69 
+Unidifusion
+
+Trama 38 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 83 
+Longitud payload: 69 
+Unidifusion
+
+Trama 39 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 83 
+Longitud payload: 69 
+Unidifusion
+
+Trama 40 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 89 
+Longitud payload: 75 
+Unidifusion
+
+Trama 41 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 131 
+Longitud payload: 117 
+Unidifusion
+
+Trama 42 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 96 
+Longitud payload: 82 
+Unidifusion
+
+Trama 43 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 111 
+Longitud payload: 97 
+Unidifusion
+
+Trama 44 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 99 
+Longitud payload: 85 
+Unidifusion
+
+Trama 45 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 111 
+Longitud payload: 97 
+Unidifusion
+
+Trama 46 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 131 
+Longitud payload: 117 
+Unidifusion
+
+Trama 47 
+Protocolo: IPv4
+Destino: d463fe6e9bbe
+Origen: bc8556c081bd
+Longitud: 96 
+Longitud payload: 82 
+Unidifusion
+
+Trama 48 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 99 
+Longitud payload: 85 
+Unidifusion
+
+Trama 49 
+Protocolo: IPv4
+Destino: bc8556c081bd
+Origen: d463fe6e9bbe
+Longitud: 153 
+Longitud payload: 139 
+Unidifusion
