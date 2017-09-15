@@ -1,80 +1,71 @@
 
 Trama 0 
 Protocolo: IPv4
-  IP origen       : 8.0.69.112
-  IP destino   : 1.181.82.29
-  Version IP        : 8
-  Longitud de cabecera :  16 Bytes
-  Longitud de paquete : 451 Bytes
-  Identificador    : 52580
-  Tiempo de vida      : 254
-  Protocolo superior : 110
-Destino: 8416f990cd64
-Origen: d463fe6e9bbe
-Longitud: 451 
-Longitud payload: 437 
-Unidifusion
+  IP Origen : 192.168.01.65.
+  IP Destino : 224.00.00.251.
+  Version de protocolo IP  : 4
+  Longitud de cabecera :  20 Bytes
+  Longitud de paquete : 103 Bytes
+  Identificador    : 26098
+  Tiempo de vida      : 255
+  Protocolo superior : 11
+  UDP
+  Sin opciones.
+  Longitud de carga util : 83 Bytes
+  Bits de precedencia
+  Ultimo fragmento
+  Primer byte : 1
 
 Trama 1 
-Protocolo: IPv4
-  IP origen       : 8.0.69.0
-  IP destino   : 0.52.100.70
-  Version IP        : 13
-  Longitud de cabecera :  16 Bytes
-  Longitud de paquete : 66 Bytes
-  Identificador    : 39870
-  Tiempo de vida      : 249
-  Protocolo superior : 144
-Destino: d463fe6e9bbe
-Origen: 8416f990cd64
-Longitud: 66 
-Longitud payload: 52 
-Unidifusion
+Protocolo: ARP
 
 Trama 2 
 Protocolo: IPv4
-  IP origen       : 8.0.69.0
-  IP destino   : 1.103.100.71
-  Version IP        : 13
-  Longitud de cabecera :  16 Bytes
-  Longitud de paquete : 373 Bytes
-  Identificador    : 39870
-  Tiempo de vida      : 249
-  Protocolo superior : 144
-Destino: d463fe6e9bbe
-Origen: 8416f990cd64
-Longitud: 373 
-Longitud payload: 359 
-Unidifusion
+  IP Origen : 192.168.01.65.
+  IP Destino : 224.00.00.251.
+  Version de protocolo IP  : 4
+  Longitud de cabecera :  20 Bytes
+  Longitud de paquete : 103 Bytes
+  Identificador    : 30194
+  Tiempo de vida      : 255
+  Protocolo superior : 11
+  UDP
+  Sin opciones.
+  Longitud de carga util : 83 Bytes
+  Bits de precedencia
+  Ultimo fragmento
+  Primer byte : 1
 
 Trama 3 
 Protocolo: IPv4
-  IP origen       : 8.0.69.112
-  IP destino   : 0.94.82.30
-  Version IP        : 8
-  Longitud de cabecera :  16 Bytes
-  Longitud de paquete : 108 Bytes
-  Identificador    : 52580
-  Tiempo de vida      : 254
-  Protocolo superior : 110
-Destino: 8416f990cd64
-Origen: d463fe6e9bbe
-Longitud: 108 
-Longitud payload: 94 
-Unidifusion
+  IP Origen : 162.125.18.133.
+  IP Destino : 192.168.01.71.
+  Version de protocolo IP  : 4
+  Longitud de cabecera :  20 Bytes
+  Longitud de paquete : 322 Bytes
+  Identificador    : 52740
+  Tiempo de vida      : 54
+  Protocolo superior : 6
+  TCP
+  Sin opciones.
+  Longitud de carga util : 302 Bytes
+  Servicio diferenciado
+  Ultimo fragmento
+  Primer byte : 1
 
 Trama 4 
 Protocolo: IPv4
-  IP origen       : 8.0.69.0
-  IP destino   : 0.52.100.72
-  Version IP        : 13
-  Longitud de cabecera :  16 Bytes
+  IP Origen : 192.168.01.71.
+  IP Destino : 162.125.18.133.
+  Version de protocolo IP  : 4
+  Longitud de cabecera :  20 Bytes
   Longitud de paquete : 66 Bytes
-  Identificador    : 39870
-  Tiempo de vida      : 249
-  Protocolo superior : 144
-Destino: d463fe6e9bbe
-Origen: 8416f990cd64
-Longitud: 66 
-Longitud payload: 52 
-Unidifusion
+  Identificador    : 32000
+  Tiempo de vida      : 64
+  Protocolo superior : 6
+  TCP
+  Sin opciones.
+  Longitud de carga util : 46 Bytes
+  Bits de precedencia
+  Ultimo fragmento
+  Primer byte : 1

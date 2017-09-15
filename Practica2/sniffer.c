@@ -11,34 +11,39 @@
 #include <net/if.h>
 #include<netinet/ip.h>    //Provides declarations for ip header
 
-struct ip_header {
-	unsigned short version;  /*Versión y longitud de cabecera*/
+typedef struct header_ip{ 
+	unsigned short version;/*Versión y longitud de cabecera*/ 
 	unsigned short longitudHeader;
- 	unsigned short tipoSer;  /*Tipo de servicio*/
- 	unsigned char longTotal;  /*Longitud total del datagrama*/
-	unsigned char IdentDgram;  /*Identificador de datagrama*/
-	unsigned char banderaOffset;  /*Fragmentación*/
-	unsigned short ttl; /*Tiempo de vida*/
- 	unsigned short protSup; /*Protocolo de capa superior*/
-	unsigned char sumVer;  /*Suma de verificación*/
-	unsigned char IPorigen[4];  /*Dirección IP del transmisor*/
-	unsigned char IPdestino[4];  /*Dirección IP del receptor*/
-};
+	unsigned short tipoSer;/*Tipo de servicio*/ 
+	unsigned char longTotal;  /*Longitud total del datagrama*/ 
+	unsigned short IdentDgram;  /*Identificador de datagrama*/
+	unsigned char banderaOffset;  /*Fragmentación*/ 
+	unsigned short ttl; /*Tiempo de vida*/ 
+	unsigned short protSup; /*Protocolo de capa superior*/ 
+	unsigned short sumVer;  /*Suma de verificación*/ 
+	unsigned char IPorigen[4];/*Dirección IP del transmisor*/ 
+	unsigned char IPdestino[4];/*Dirección IP del receptor*/ 
+}header_ip; 
 
+void print_protocolo(unsigned short proto);
 
 #define BUFFER_SIZE 2000 
 
 int create_socket(); //funcion para crear el socket y poner tarjeta en modo promiscuo
 int procesar_trama(unsigned char *buffer, int buffer_size, int nTrama); //procesar la trama capturada
 int procesar_trama_ip(unsigned char *buffer, int buffer_size);
+void parse_trama_ip(unsigned char *buffer, int buffer_size);
 
 int socket_raw; //unico socket en todo el programa
 FILE *file;
 struct sockaddr_in source2;
-struct header = struct ip_header;
+char *aux;
+header_ip *cabip;
 
 int main(int argc, char const *argv[])
 {
+	cabip=(header_ip*)malloc(sizeof(header_ip));
+	aux = (char*) malloc(50);
 	struct sockaddr saddr;
 	if(argc < 2){ //como argumento recibe el numero de paquetes a capturar, si no lo tiene termina el programa
 		perror("Falta argumento de numero de paquetes a capturar");
@@ -122,97 +127,136 @@ int procesar_trama(unsigned char *buffer, int buffer_size, int nTrama)
 			default:
 				fprintf(file,"Protocolo: Otro\n");
 		}
-		fprintf(file,"Destino: ");
-		memcpy(destino,&buffer[0],6); //copia la mac destino de la trama al string buffer, desde el inicio de la trama copia 6 bytes
-		for(int i=0;i<6;i++){
-
-			fprintf(file,"%x",destino[i]);
-		}
-
-		fprintf(file,"\n");
-
-
-		fprintf(file,"Origen: ");
-		memcpy(origen,&buffer[6],6); //MAC origen, copia la mac origen de trama a destino, el offset es 6
-		for(int i=0;i<6;i++){
-
-			fprintf(file,"%x",origen[i]);
-		}
-
-		fprintf(file,"\n");
-
-		fprintf(file,"Longitud: %d \n",buffer_size); //longutud de trama
-
-		fprintf(file,"Longitud payload: %d \n",buffer_size-14); //longitud de payload igual -14
-
-
-		uint16_t tipoMAC;				//UNIDIFUSION O MULTIDIFUSION
-		memcpy(&tipoMAC,&buffer[0],1);	//copia el primer byte de la trama a un entero
-		if(tipoMAC << 7 == 1){	//saca el ultimo bit del primer byte, 
-
-			fprintf(file,"Multidifusion\n");	//si es 1 es multidifusion
-		}
-		else{
-
-			fprintf(file,"Unidifusion\n");	//si es 0 es unidifusion
-		}
 	}
 
 }
 
 int procesar_trama_ip(unsigned char *buffer, int buffer_size){
-	struct iphdr *iph = (struct iphdr *)buffer;
-	
-	struct sockaddr_in pkt_source,pkt_dest;
+	parse_trama_ip(buffer,buffer_size);
 
-	memset(&pkt_source, 0, sizeof(pkt_source));
-	pkt_source.sin_addr.s_addr = iph->saddr;
-		
-	memset(&pkt_dest, 0, sizeof(pkt_dest));
-	pkt_dest.sin_addr.s_addr = iph->daddr;
+	fprintf(file,"  IP Origen : ");
+	for(int i=0;i<4;i++){
+		fprintf(file,"%02d.",cabip->IPorigen[i]);	
+	//	fprintf(file,"%02x",cabip->IPdestino[i]);
+	}
 
-	fprintf(file,"  IP origen       : %s\n",inet_ntoa(pkt_source.sin_addr));
-    fprintf(file,"  IP destino   : %s\n",inet_ntoa(pkt_dest.sin_addr));
-	fprintf(file,"  Version IP        : %d\n",(unsigned int)iph->version);
-	fprintf(file,"  Longitud de cabecera :  %d Bytes\n",((unsigned int)(iph->ihl))*4);
+	fprintf(file,"\n");
+	fprintf(file,"  IP Destino : ");
+	for(int i=0;i<4;i++){
+		fprintf(file,"%02d.",cabip->IPdestino[i]);	
+	//	fprintf(file,"%02x",cabip->IPdestino[i]);
+	}
+	fprintf(file,"\n");
+
+	fprintf(file,"  Version de protocolo IP  : %d\n",cabip->version);
+
+	int lon=cabip->longitudHeader*4;
+	fprintf(file,"  Longitud de cabecera :  %d Bytes\n",lon);
+
 	fprintf(file,"  Longitud de paquete : %d Bytes\n", buffer_size);
-	fprintf(file,"  Identificador    : %d\n",ntohs(iph->id));
-	fprintf(file,"  Tiempo de vida      : %d\n",(unsigned int)iph->ttl);
-	fprintf(file,"  Protocolo superior : %d\n",(unsigned int)iph->protocol);
-	
 
+	fprintf(file,"  Identificador    : %d\n",cabip->IdentDgram);
+
+	fprintf(file,"  Tiempo de vida      : %d\n",cabip->ttl);
+
+	fprintf(file,"  Protocolo superior : %x\n",cabip->protSup);
+	print_protocolo(cabip->protSup);
+
+	if(lon == 20)
+		fprintf(file,"  Sin opciones.\n");
+	else
+		fprintf(file,"  Con opciones.\n");
+	
+	fprintf(file,"  Longitud de carga util : %d Bytes\n",buffer_size-lon);
+
+	short prece = cabip->tipoSer & 224;
+	prece = prece >>5;
+	if(prece == 0)
+		fprintf(file,"  Bits de precedencia\n");
+	else	
+		fprintf(file,"  Servicio diferenciado\n");
+	
+	short frag = cabip->banderaOffset && 0b1110000000000000;
+	frag = frag >>13;
+	if(frag >= 0b010)
+		fprintf(file,"  No fragmentado\n");
+	else
+		if(frag == 0b000)
+			fprintf(file,"  Ultimo fragmento\n");
+		if(frag == 0b001)
+			fprintf(file,"  Fragmento Intermedio\n");
+
+	short by= cabip->banderaOffset && 0b0001111111111111;
+	fprintf(file,"  Primer byte : %d\n",by);
 		
 }
-void parse_trama_ip(unsigned char *buffer, int buffer_size){
-	memcpy(&header.version,&buffer[0],3);
-	memcpy(&header.longitudHeader,&buffer[4],7);
-	memcpy(&header.tipoSer,&buffer[8],13);
-	memcpy(&header.longTotal,&buffer[16],31);
-	memcpy(&header.IdentDgram,&buffer[32],47);
-	memcpy(&header.banderaOffset,&buffer[48],50);
-	memcpy(&header.banderaOffset,&buffer[64],71);
-	memcpy(&header.protSup,&buffer[72],79);
-	memcpy(&header.IPorigen[0],&buffer[96],103);
-	memcpy(&header.IPorigen[1],&buffer[104],111);
-	memcpy(&header.IPorigen[2],&buffer[112],119);
-	memcpy(&header.IPorigen[3],&buffer[120],127);
-	memcpy(&header.IPdestino[0],&buffer[128],135);
-	memcpy(&header.IPdestino[1],&buffer[136],143);
-	memcpy(&header.IPdestino[2],&buffer[144],151);
-	memcpy(&header.IPdestino[3],&buffer[152],159);	
+
+void print_protocolo(unsigned short proto){
+	switch(proto){
+		case 0x01:
+		fprintf(file,"  MPv4\n");
+		break;
+		case 0x02:
+		fprintf(file,"  IGMP\n");
+		break;
+		case 0x04:
+		fprintf(file,"  IP\n");
+		break;
+		case 0x06:
+		fprintf(file,"  TCP\n");
+		break;
+		case 0x11:
+		fprintf(file,"  UDP\n");
+		break;
+		case 0x29:
+		fprintf(file,"  IPv6\n");
+		break;
+		case 0x59:
+		fprintf(file,"  OSPF\n");
+		break;
+
+
+	}
 }
-struct ip_header {
-	unsigned short version;  /*Versión y longitud de cabecera*/
-	unsigned short longitudHeader;
- 	unsigned short tipoSer;  /*Tipo de servicio*/
- 	unsigned char longTotal;  /*Longitud total del datagrama*/
-	unsigned char IdentDgram;  /*Identificador de datagrama*/
-	unsigned char banderaOffset;  /*Fragmentación*/
-	unsigned short ttl; /*Tiempo de vida*/
- 	unsigned short protSup; /*Protocolo de capa superior*/
-	unsigned char IPorigen[4];  /*Dirección IP del transmisor*/
-	unsigned char IPdestino[4];  /*Dirección IP del receptor*/
-};
+
+
+
+void parse_trama_ip(unsigned char *buffer, int buffer_size){
+	uint temporal;
+
+	memcpy(&temporal,&buffer[14],1);
+	cabip->version = temporal & 240;
+	cabip->version = cabip->version >>4;
+	cabip->longitudHeader = temporal & 15;
+
+	//Tipo de servicio 
+	memcpy(&cabip->tipoSer,&buffer[15],1);
+
+	//Longitud total del datagrama
+	memcpy(&cabip->longTotal,&buffer[16],2);
+
+	//Identificador de datagrama
+	memcpy(&cabip->IdentDgram,&buffer[18],2);
+
+	//Fragmentación
+	memcpy(&cabip->banderaOffset,&buffer[20],2);
+			
+	//Tiempo de vida
+	memcpy(&cabip->ttl,&buffer[22],1);
+
+	//Protocolo de capa superior 
+	memcpy(&cabip->protSup,&buffer[23],1);
+
+	memcpy(&cabip->sumVer,&buffer[24],2);
+
+	memcpy(&cabip->IPorigen,&buffer[26],4); //copia la direccion IP Origen de 4 bytes
+	
+
+	//Dirección IP del receptor
+
+	memcpy(&cabip->IPdestino,&buffer[30],4); //copia la direccion IP Destino de 4 bytes
+}
+
 
 int create_socket()
 {
