@@ -10,6 +10,8 @@
 #include <sys/types.h>
 #include <net/if.h>
 #include<netinet/ip.h> 
+#include <pthread.h>
+
 
 int create_socket();
 
@@ -31,21 +33,53 @@ typedef struct ARP_struct{
 	unsigned char destinoMAC[6];  /*Dirección MAC del receptor (dirección solicitada)*/
 unsigned char destinoIP[4];         /*Dirección IP del receptor (dato de entrada)*/
 } msgARP;
+void* ARP_process(void *ptr);
 
 int main(int argc, char const *argv[])
 {
     int nip = atoi(argv[1]);
-    int *threads= (int*)malloc(sizeof(int)*nip);
-    char **ips;
-    ips=(char**)malloc(sizeof(char)*12);
-    ips=(char*)malloc(sizeof(char)*nip);
+    pthread_t *threads= (pthread_t*)malloc(sizeof(int)*nip);
+    int threadId[nip];
+    const char **ips;
+    ips=(const char**)malloc(sizeof(char)*12);
+    for(int i=0;i<12;i++){
+        ips[i]=(const char*)malloc(sizeof(char)*nip);
+    }
+    
     for(int i=0;i<nip;i++){
         ips[i]=argv[i+2];
     }
+    
+    //create_socket();
 
-    printf("%s",ips[0]);
+    for(int i=0;i<nip;i++){
+        
+        threadId[i]=pthread_create(&threads[i],NULL,ARP_process,(void*)ips[i]);
+        printf("%d: %d\n",threadId[i],i);
+        if(threadId[i])
+             {
+                printf("Error - pthread_create() return code: %d\n",threadId[i]);
+                exit(EXIT_FAILURE);
+             }
+        
+    }
+    for(int i=0;i<nip;i++){
+        pthread_join( threadId[i], NULL);
+        printf("%d: %d\n",threadId[i],i);
+    }
+    
 
-    msgARP = 
+    
+ 
+}
+
+
+void* ARP_process(void *ptr){
+    printf("hilo");
+    char *ip ;
+    ip= (char *) ptr;
+    printf("%s\n",ip);
+
 }
 
 
