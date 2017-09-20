@@ -35,6 +35,7 @@ unsigned char destinoIP[4];         /*Dirección IP del receptor (dato de entrad
 int main(int argc, char const *argv[])
 {
     int nip = atoi(argv[1]);
+    int *threads= (int*)malloc(sizeof(int)*nip);
     char **ips;
     ips=(char**)malloc(sizeof(char)*12);
     ips=(char*)malloc(sizeof(char)*nip);
