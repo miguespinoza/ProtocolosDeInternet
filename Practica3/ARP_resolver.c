@@ -82,15 +82,13 @@ void* ARP_process(void *ptr){
     unsigned char *local_ip, *local_mac;
     local_ip=(unsigned char*) malloc(sizeof(unsigned char)*8);
     local_mac=(unsigned char*) malloc(sizeof(unsigned char)*12);
-   // ip= (char *) ptr;
-
+    ip= (char *) ptr;
     printf("ip");
     getLocalMac(local_mac);
     getLocalIp(local_ip);
-    for (int i=0; i<IP_len;i++)
-        printf("%02X",local_ip[i]);
+    printf("%s",local_ip);
+    
     printf("\nMAC");
-
     for (int i=0; i<HWADDR_len; i++)
         printf("%02X",local_mac[i]);
     printf("\n");
@@ -99,22 +97,13 @@ void* ARP_process(void *ptr){
 void getLocalIp(unsigned char *ip_str){
     int fd;
     struct ifreq ifr;
-   
     fd = socket(AF_INET, SOCK_DGRAM, 0);
-   
-    /* I want to get an IPv4 IP address */
     ifr.ifr_addr.sa_family = AF_INET;
-   
-    /* I want IP address attached to "eth0" */
-    strncpy(ifr.ifr_name, "enp3s0", IFNAMSIZ-1);
-   
+    strncpy(ifr.ifr_name, "eno1", IFNAMSIZ-1);
     ioctl(fd, SIOCGIFADDR, &ifr);
-   
     close(fd);
-   
-    /* display result */
-    sprintf(ip_str,"%x\n", inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
-    memcpy(ip_str, inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr), 6);
+    sprintf(ip_str,"%s\n"  , inet_ntoa(( (struct sockaddr_in *)&ifr.ifr_addr )->sin_addr) );
+    
 }
 
 void getLocalMac(unsigned char *MAC_str)
@@ -124,11 +113,9 @@ void getLocalMac(unsigned char *MAC_str)
     int s,i;
     struct ifreq ifr;
     s = socket(AF_INET, SOCK_DGRAM, 0);
-    strcpy(ifr.ifr_name, "enp3s0");
+    strcpy(ifr.ifr_name, "eno1");
     ioctl(s, SIOCGIFHWADDR, &ifr);
     close(s);
-    
-
     memcpy(MAC_str, ifr.ifr_hwaddr.sa_data, 6);
 }/*
 typedef struct ARP_struct{
