@@ -95,6 +95,7 @@ void* ARP_process(void *ptr){
 }
 
 void getLocalIp(unsigned char *ip_str){
+    #define IP_len 4
     int fd;
     struct ifreq ifr;
     fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -102,14 +103,21 @@ void getLocalIp(unsigned char *ip_str){
     strncpy(ifr.ifr_name, "eno1", IFNAMSIZ-1);
     ioctl(fd, SIOCGIFADDR, &ifr);
     close(fd);
-    sprintf(ip_str,"%s\n"  , inet_ntoa(( (struct sockaddr_in *)&ifr.ifr_addr )->sin_addr) );
-    
+    unsigned char *local_ip;
+    local_ip=(unsigned char*) malloc(sizeof(unsigned char)*8);
+
+    struct sockaddr_in* ipaddr = (struct sockaddr_in*)&ifr.ifr_addr;
+    printf("IP address: %s\n",inet_ntoa(ipaddr->sin_addr));
+    sprintf(&ip_str[0],"%02x\n",(ipaddr->sin_addr.s_addr>>0) &0x000000ff);
+    sprintf(&ip_str[2],"%02x\n",(ipaddr->sin_addr.s_addr>>8) &0x000000ff);
+    sprintf(&ip_str[4],"%02x\n",(ipaddr->sin_addr.s_addr>>16) &0x000000ff);
+    sprintf(&ip_str[6],"%02x\n",(ipaddr->sin_addr.s_addr>>24) &0x000000ff);
 }
 
 void getLocalMac(unsigned char *MAC_str)
 {
     #define HWADDR_len 6
-    #define IP_len 4
+    
     int s,i;
     struct ifreq ifr;
     s = socket(AF_INET, SOCK_DGRAM, 0);
