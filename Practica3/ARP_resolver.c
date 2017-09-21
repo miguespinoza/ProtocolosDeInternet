@@ -12,12 +12,22 @@
 #include<netinet/ip.h> 
 #include <pthread.h>
 
+#define PROTO_ARP 0x0806
+#define ETH2_HEADER_LEN 14
+#define HW_TYPE 1
+#define MAC_LENGTH 6
+#define IPV4_LENGTH 4
+#define ARP_REQUEST 0x01
+#define ARP_REPLY 0x02
+#define BUF_SIZE 60
+
 
 int create_socket();
 void getLocalMac(unsigned char *MAC_str);
 
 void getLocalIp(unsigned char *ip_str);
-int sock;
+int broadcastSock;
+
 
 typedef struct ARP_struct{
 	unsigned char destinoEthernet[6];      /*Dirección de difusión 0xFF*/
@@ -52,7 +62,7 @@ int main(int argc, char const *argv[])
         ips[i]=argv[i+2];
     }
     
-    //create_socket();
+    create_socket();
 
     for(int i=0;i<nip;i++){
         
@@ -75,27 +85,56 @@ int main(int argc, char const *argv[])
 
 
 void* ARP_process(void *ptr){
-    #define HWADDR_len 6
-    #define IP_len 4
-    //printf("hilo");
+    #define MACLEN 6
+    #define IPLEN 4
+    struct sockaddr saddr;
+    msgARP arp;
     char *ip ;
     unsigned char *local_ip, *local_mac;
     local_ip=(unsigned char*) malloc(sizeof(unsigned char)*8);
     local_mac=(unsigned char*) malloc(sizeof(unsigned char)*12);
     ip= (char *) ptr;
-    printf("ip");
     getLocalMac(local_mac);
     getLocalIp(local_ip);
-    printf("%s",local_ip);
-    
-    printf("\nMAC");
-    for (int i=0; i<HWADDR_len; i++)
-        printf("%02X",local_mac[i]);
+    for (int i=0; i<MACLEN; i++){
+        sprintf(arp.origenMAC,"%02X",local_mac[i]);
+    }
     printf("\n");
+
+    
+    memcpy(&arp.destinoIP,&ip,sizeof(char)*4);
+    memcpy(&arp.origenIP,&local_ip,sizeof(char)*4);
+    ;
+    for(int i=0(;i<MACLEN;i++){
+        arp.destinoMAC[i]='0';
+    }    
+    
+    arp.tipoProtocolo=htons(ETH_P_IP);
+    arp.longitudHardware=MAC_LENGTH;
+    arp.longitudProtocolo=IPV4_LENGTH;
+    ARP.tipoMensaje = htons(ARPOP_REQUEST);
+    ARP.tipoEthernet= htons(ETH_P_ARP);
+    arp.tipoHardware= htons(ARPHRD_ETHER);
+
+    printf("Mensaje ARP generado para IP: %d.%d.%d.%d\n",ARP.destinoIP[0],ARP.destinoIP[1],ARP.destinoIP[2],ARP.destinoIP[3]);
+
+    bzero(&saddr,sizeof(saddr));
+    strcpy(saddr,)
+    
+    memset(&s, '\0', sizeof(struct sockaddr_in));
+    s.sin_family = AF_INET;
+    s.sin_addr.s_addr = htonl(INADDR_BROADCAST); 
+
+    if(sendto(broadcastSock, &arp, sizeof(msgARP), 0, (struct sockaddr *)&s, sizeof(struct sockaddr_in)) < 0)
+    perror("sendto"); 
+    if(sendto(conexion     ,&ARP,sizeof(ARP),0,(struct sockaddr *)&saddr,sizeof(saddr))<0){
+        perror("Error al envío\n");
+            close(conexion);
+        exit(1);
+    }
 }
 
 void getLocalIp(unsigned char *ip_str){
-    #define IP_len 4
     int fd;
     struct ifreq ifr;
     fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -107,7 +146,6 @@ void getLocalIp(unsigned char *ip_str){
     local_ip=(unsigned char*) malloc(sizeof(unsigned char)*8);
 
     struct sockaddr_in* ipaddr = (struct sockaddr_in*)&ifr.ifr_addr;
-    printf("IP address: %s\n",inet_ntoa(ipaddr->sin_addr));
     sprintf(&ip_str[0],"%02x\n",(ipaddr->sin_addr.s_addr>>0) &0x000000ff);
     sprintf(&ip_str[2],"%02x\n",(ipaddr->sin_addr.s_addr>>8) &0x000000ff);
     sprintf(&ip_str[4],"%02x\n",(ipaddr->sin_addr.s_addr>>16) &0x000000ff);
@@ -116,7 +154,7 @@ void getLocalIp(unsigned char *ip_str){
 
 void getLocalMac(unsigned char *MAC_str)
 {
-    #define HWADDR_len 6
+    #define MACLEN 6
     
     int s,i;
     struct ifreq ifr;
@@ -150,13 +188,13 @@ int create_socket()
     struct ifreq ethreq;
     int optval;
 
-	sock= socket(PF_PACKET,SOCK_RAW,htons(ETH_P_ARP));
-	if(sock < 0){
+	broadcastSock= socket(PF_PACKET,SOCK_RAW,htons(ETH_P_ARP));
+	if(broadcastSock < 0){
 		perror("Error al abrir el socket ");
 		return -1;
     }
     
-    setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &optval, sizeof(optval));
+    setsockopt(broadcastSock, SOL_SOCKET, SO_BROADCAST, &optval, sizeof(optval));
 
 
 	return 0;
