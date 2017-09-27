@@ -118,8 +118,7 @@ void* ARP_process(void *ptr){
         }
         if ((ntohs(ARP.tipoMensaje) == ARPOP_REPLY) && !strncmp(ipToSolve,ARP.origenIP,4)) {
            printf("*** RESPUESTA ARP ***\n");
-           printf("\t IP:  %d.%d.%d.%d\n",(int)ARP.origenIP[0],(int)ARP.origenIP[1],(int)ARP.origenIP[2],(int)ARP.origenIP[3]);
-           printf("\t MAC: %.2x:%.2x:%.2x:%.2x:%.2x:%.2x\n",ARP.origenMAC[0],ARP.origenMAC[1],ARP.origenMAC[2],ARP.origenMAC[3],ARP.origenMAC[4],ARP.origenMAC[5] );
+           printf("\t IP:  %d.%d.%d.%d\n MAC: %.2x:%.2x:%.2x:%.2x:%.2x:%.2x\n",(int)ARP.origenIP[0],(int)ARP.origenIP[1],(int)ARP.origenIP[2],(int)ARP.origenIP[3],ARP.origenMAC[0],ARP.origenMAC[1],ARP.origenMAC[2],ARP.origenMAC[3],ARP.origenMAC[4],ARP.origenMAC[5]);
         flag = 1;
         }
     }
@@ -149,13 +148,20 @@ void getLocalIp(unsigned char *ip_str){
 
 void getLocalData(struct ifreq *NetworkDevice, msgARP *ARP){
     char device[] = "wlp2s0";
-    strncpy(NetworkDevice->ifr_name,device,IFNAMSIZ);
-    int s = socket(AF_INET, SOCK_DGRAM, 0);
-    if(ioctl(s, SIOCGIFHWADDR, &NetworkDevice) < 0){
+    int s,i;
+    struct ifreq ifr;
+    s = socket(AF_INET, SOCK_DGRAM, 0);
+    strcpy(ifr.ifr_name, device);
+
+    if(ioctl(s, SIOCGIFHWADDR, &ifr) < 0){
             perror("Error al obtener información del hadware\n");
             close(s);
             exit(1);
     } 
+    close(s);
+
+
+
 
     bcopy(NetworkDevice->ifr_hwaddr.sa_data,ARP->origenMAC,6);
     bcopy(NetworkDevice->ifr_hwaddr.sa_data,ARP->origenEthernet,6);
