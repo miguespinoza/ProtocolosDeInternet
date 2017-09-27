@@ -19,7 +19,7 @@ void getLocalMac(unsigned char *MAC_str);
 void getLocalIp(unsigned char *ip_str);
 
 
-char device[] = "enp3s0";
+char device[] = "wlp2s0";
 //char device[] = "wlp2s0";
 
 
@@ -46,20 +46,10 @@ int main(int argc, char const *argv[])
     int nip = atoi(argv[1]);
     pthread_t *threads= (pthread_t*)malloc(sizeof(int)*nip);
     int threadId[nip];
-    const char **ips;
-    ips=(const char**)malloc(sizeof(char)*12);
-    for(int i=0;i<12;i++){
-        ips[i]=(const char*)malloc(sizeof(char)*nip);
-    }
     
-    for(int i=0;i<nip;i++){
-        ips[i]=argv[i+2];
-    }
-    
-
-    for(int i=0;i<nip;i++){
-        
-        threadId[i]=pthread_create(&threads[i],NULL,ARP_process,(void*)ips[i]);
+    for(int i=1;i<=nip;i++){
+        printf("ip: %s\n",argv[i+1] );
+        threadId[i]=pthread_create(&threads[i-1],NULL,ARP_process,(void*) argv[i+1]);
         if(threadId[i])
              {
                 printf("Error - pthread_create() return code: %d\n",threadId[i]);
@@ -67,8 +57,8 @@ int main(int argc, char const *argv[])
              }
         
     }
-    for(int i=0;i<nip;i++){
-        pthread_join( threads[i], NULL);
+    for(int i=1;i<=nip;i++){
+        pthread_join( threads[i-1], NULL);
     }
     
 
@@ -81,7 +71,9 @@ void* ARP_process(void *ptr){
     #define HWADDR_len 6
     #define IP_len 4
     msgARP ARP;
-    char *ip ;
+    const char *ipToSolve;
+    ipToSolve=(const char *)ptr;
+    printf("inicio de proceso ARP IP: %s\n",ipToSolve );
     struct ifreq NetworkDevice;
     struct sockaddr saddr; 
     int sock;
@@ -90,11 +82,11 @@ void* ARP_process(void *ptr){
     unsigned char *local_ip, *local_mac;
     local_ip=(unsigned char*) malloc(sizeof(unsigned char)*8);
     local_mac=(unsigned char*) malloc(sizeof(unsigned char)*12);
-    ip= (char *) ptr;
+    
 
     getLocalData(&NetworkDevice, &ARP);
 
-/* ORIGEN ARP */
+// ORIGEN ARP 
     ARP.longitudHardware = 6;
     ARP.longitudProtocolo = 4;
     ARP.tipoProtocolo = htons(ETH_P_IP);
@@ -102,9 +94,9 @@ void* ARP_process(void *ptr){
     ARP.tipoMensaje = htons(ARPOP_REQUEST);
     bcopy(&NetworkDevice.ifr_addr.sa_data[2],&ARP.origenIP,4);
     bzero(&ARP.destinoMAC,7);
-    inet_aton(ip,ARP.destinoIP);
+    inet_aton(ipToSolve,ARP.destinoIP);
     strncpy(ipdos,ARP.destinoIP,4);
-        /* ETHERNET */
+        // ETHERNET 
     memset(&ARP.destinoEthernet,0xff,6);
     ARP.tipoEthernet= htons(ETH_P_ARP);
     bzero(&saddr,sizeof(saddr));
@@ -124,7 +116,7 @@ void* ARP_process(void *ptr){
             perror("Error recibir mensaje");
             exit(1);
         }
-        if ((ntohs(ARP.tipoMensaje) == ARPOP_REPLY) && !strncmp(ip,ARP.origenIP,4)) {
+        if ((ntohs(ARP.tipoMensaje) == ARPOP_REPLY) && !strncmp(ipToSolve,ARP.origenIP,4)) {
            printf("*** RESPUESTA ARP ***\n");
            printf("\t IP:  %d.%d.%d.%d\n",(int)ARP.origenIP[0],(int)ARP.origenIP[1],(int)ARP.origenIP[2],(int)ARP.origenIP[3]);
            printf("\t MAC: %.2x:%.2x:%.2x:%.2x:%.2x:%.2x\n",ARP.origenMAC[0],ARP.origenMAC[1],ARP.origenMAC[2],ARP.origenMAC[3],ARP.origenMAC[4],ARP.origenMAC[5] );
@@ -156,8 +148,8 @@ void getLocalIp(unsigned char *ip_str){
 }
 
 void getLocalData(struct ifreq *NetworkDevice, msgARP *ARP){
-
-    strcpy(NetworkDevice->ifr_name, "enp3s0");
+    char device[] = "wlp2s0";
+    strncpy(NetworkDevice->ifr_name,device,IFNAMSIZ);
     int s = socket(AF_INET, SOCK_DGRAM, 0);
     if(ioctl(s, SIOCGIFHWADDR, &NetworkDevice) < 0){
             perror("Error al obtener información del hadware\n");
