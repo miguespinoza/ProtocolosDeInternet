@@ -14,12 +14,10 @@
 #include <pthread.h>
 #include <unistd.h>
 
-int create_socket();
-void getLocalMac(unsigned char *MAC_str);
-void getLocalIp(unsigned char *ip_str);
+int create_socket(int *);
 
 
-char device[] = "wlp2s0";
+char device[] = "eno1";
 //char device[] = "wlp2s0";
 
 
@@ -48,7 +46,7 @@ int main(int argc, char const *argv[])
     int threadId[nip];
     
     for(int i=1;i<=nip;i++){
-        printf("ip: %s\n",argv[i+1] );
+       // printf("ip: %s\n",argv[i+1] );
         threadId[i]=pthread_create(&threads[i-1],NULL,ARP_process,(void*) argv[i+1]);
         if(threadId[i])
              {
@@ -84,7 +82,32 @@ void* ARP_process(void *ptr){
     local_mac=(unsigned char*) malloc(sizeof(unsigned char)*12);
     
 
-    getLocalData(&NetworkDevice, &ARP);
+   // getLocalData(&NetworkDevice, &ARP);
+    strncpy(NetworkDevice.ifr_name,device,IFNAMSIZ);
+    if(ioctl(sock, SIOCGIFHWADDR, &NetworkDevice) < 0){
+        perror("Error al obtener información del hadware\n");
+        close(sock);
+        exit(1);
+    } 
+
+    bcopy(&NetworkDevice.ifr_hwaddr.sa_data,&ARP.origenMAC,6);
+    bcopy(&NetworkDevice.ifr_hwaddr.sa_data,&ARP.origenEthernet,6);
+    
+    
+    strcpy(NetworkDevice.ifr_name,device);
+    
+   // printf("\t MAC: %.2x:%.2x:%.2x:%.2x:%.2x:%.2x\n",ARP.origenMAC[0],ARP.origenMAC[1],ARP.origenMAC[2],ARP.origenMAC[3],ARP.origenMAC[4],ARP.origenMAC[5] );
+
+    if(ioctl(sock, SIOCGIFADDR, &NetworkDevice) < 0){
+        perror("Error al reasignar bandera  \n");
+        close(sock);
+        exit(1);
+    }
+    bcopy(&NetworkDevice.ifr_addr.sa_data[2],&ARP.origenIP,4);
+   // printf(" origen IP: %d.%d.%d.%d\n",ARP.origenIP[0],ARP.origenIP[1],ARP.origenIP[2],ARP.origenIP[3]);
+
+
+
 
 // ORIGEN ARP 
     ARP.longitudHardware = 6;
@@ -99,7 +122,7 @@ void* ARP_process(void *ptr){
         // ETHERNET 
     memset(&ARP.destinoEthernet,0xff,6);
     ARP.tipoEthernet= htons(ETH_P_ARP);
-    bzero(&saddr,sizeof(saddr));
+        bzero(&saddr,sizeof(saddr));
     strcpy(saddr.sa_data,device);
     printf("Mensaje ARP generado para IP: %d.%d.%d.%d\n",ARP.destinoIP[0],ARP.destinoIP[1],ARP.destinoIP[2],ARP.destinoIP[3]);
     if(sendto(sock,&ARP,sizeof(ARP),0,(struct sockaddr *)&saddr,sizeof(saddr))<0){
@@ -116,6 +139,9 @@ void* ARP_process(void *ptr){
             perror("Error recibir mensaje");
             exit(1);
         }
+        printf("\t IP:  %d.%d.%d.%d\n",(int)ARP.origenIP[0],(int)ARP.origenIP[1],(int)ARP.origenIP[2],(int)ARP.origenIP[3]);
+        printf("\t MAC: %.2x:%.2x:%.2x:%.2x:%.2x:%.2x\n",ARP.origenMAC[0],ARP.origenMAC[1],ARP.origenMAC[2],ARP.origenMAC[3],ARP.origenMAC[4],ARP.origenMAC[5] );
+        flag = 1;
         if ((ntohs(ARP.tipoMensaje) == ARPOP_REPLY) && !strncmp(ipToSolve,ARP.origenIP,4)) {
            printf("*** RESPUESTA ARP ***\n");
            printf("\t IP:  %d.%d.%d.%d\n",(int)ARP.origenIP[0],(int)ARP.origenIP[1],(int)ARP.origenIP[2],(int)ARP.origenIP[3]);
@@ -126,70 +152,27 @@ void* ARP_process(void *ptr){
     close(sock);
 }
 
-void getLocalIp(unsigned char *ip_str){
-    /*int fd;
-    struct ifreq ifr;
-   
-    fd = socket(AF_INET, SOCK_DGRAM, 0);
-   
-   //  I want to get an IPv4 IP address 
-    ifr.ifr_addr.sa_family = AF_INET;
-   
-   //7  I want IP address attached to "eth0" 
-    strncpy(ifr.ifr_name, "enp3s0", IFNAMSIZ-1);
-   
-    ioctl(fd, SIOCGIFADDR, &ifr);
-   
-    close(fd);
-   
-    // display result 
-    sprintf(ip_str,"%x\n", inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
-    memcpy(ip_str, inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr), 6);*/
-}
-
 void getLocalData(struct ifreq *NetworkDevice, msgARP *ARP){
-    char device[] = "wlp2s0";
-    strncpy(NetworkDevice->ifr_name,device,IFNAMSIZ);
-    int s = socket(AF_INET, SOCK_DGRAM, 0);
-    if(ioctl(s, SIOCGIFHWADDR, &NetworkDevice) < 0){
+    int s,i;
+    struct ifreq ifr;
+    s = socket(AF_INET, SOCK_DGRAM, 0);
+    strcpy(ifr.ifr_name, "eno1");
+    if(ioctl(s, SIOCGIFHWADDR, &ifr) < 0){
             perror("Error al obtener información del hadware\n");
             close(s);
-            exit(1);
+            exit(1);    
     } 
 
     bcopy(NetworkDevice->ifr_hwaddr.sa_data,ARP->origenMAC,6);
     bcopy(NetworkDevice->ifr_hwaddr.sa_data,ARP->origenEthernet,6);
     strcpy(NetworkDevice->ifr_name,device);
+    printf(" origen IP: %d.%d.%d.%d\n",ARP->origenIP[0],ARP->origenIP[1],ARP->origenIP[2],ARP->origenIP[3]);
+    printf("\t MAC: %.2x:%.2x:%.2x:%.2x:%.2x:%.2x\n",ARP->origenMAC[0],ARP->origenMAC[1],ARP->origenMAC[2],ARP->origenMAC[3],ARP->origenMAC[4],ARP->origenMAC[5] );
+    
     close(s);
 }
 
-void getLocalMac(unsigned char *MAC_str)
-{
-    /*#define HWADDR_len 6
-    #define IP_len 4
-    int s,i;
-    struct ifreq ifr;
-    s = socket(AF_INET, SOCK_DGRAM, 0);
-    strcpy(ifr.ifr_name, "enp3s0");
-    ioctl(s, SIOCGIFHWADDR, &ifr);
-    close(s);
-    memcpy(MAC_str, ifr.ifr_hwaddr.sa_data, 6);*/
-}/*
-typedef struct ARP_struct{
-	unsigned char destinoEthernet[6];      //Dirección de difusión 0xFF
-	unsigned char origenEthernet[6];       //Dirección MAC del transmisor
-	unsigned short tipoEthernet;             //Tipo de mensaje en la trama Ethernet
-	unsigned short tipoHardware;           //Tipo de hardware utilizado para difundir el mensaje ARP (Ethernet)
-	unsigned short tipoProtocolo;          //Tipo de protocolo de red utilizado para
- difundir el mensaje ARP (IP)
-    unsigned char longitudHardware;  //Tamaño de direcciones de hardware (6bytes)
-    unsigned char longitudProtocolo;  //Tamaño de direcciones del protocolo (4bytes)
-    unsigned short tipoMensaje;          // Solicitud o respuesta
-	unsigned char origenMAC[6];         //Dirección MAC del transmisor
-	unsigned char origenIP[4];             //Dirección IP del transmisor
-	unsigned char destinoMAC[6];  //Dirección MAC del receptor (dirección solicitada)
-unsigned char destinoIP[4];         //Dirección IP del receptor (dato de entrada)
-} msgARP;*/
+
 
 
 
